@@ -14,6 +14,16 @@ namespace CQuery.Test
     }
     
     [Fact]
+    public void TestSimplePhrase()
+    {
+      var matcher = SimpleQuery.Compile(@"""multi word""");
+
+      Assert.True(matcher("multi word"));
+      Assert.True(matcher("inner multi word inner"));
+      Assert.False(matcher("inner multi test word inner"));
+    }
+    
+    [Fact]
     public void TestSingleCondition()
     {
       var matcher = SimpleQuery.Compile(@"""word1"" OR ""word2""");

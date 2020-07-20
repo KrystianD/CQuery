@@ -19,7 +19,7 @@ namespace CQuery
     private static Parser<ExpressionType> LogicNot =
         Parse.String("NOT").Token().Return(ExpressionType.Not);
 
-    private static readonly Parser<string> Phrase = Parse.LetterOrDigit.AtLeastOnce().Contained(Parse.Char('"'), Parse.Char('"')).Text();
+    private static readonly Parser<string> Phrase = Parse.CharExcept('"').AtLeastOnce().Contained(Parse.Char('"'), Parse.Char('"')).Text();
 
     public static Func<string, bool> Compile(string query)
     {
