@@ -12,7 +12,7 @@ namespace CQuery.Test
       Assert.True(matcher("word1"));
       Assert.False(matcher("word2"));
     }
-    
+
     [Fact]
     public void TestSimplePhrase()
     {
@@ -22,7 +22,7 @@ namespace CQuery.Test
       Assert.True(matcher("inner multi word inner"));
       Assert.False(matcher("inner multi test word inner"));
     }
-    
+
     [Fact]
     public void TestSingleCondition()
     {
@@ -32,7 +32,7 @@ namespace CQuery.Test
       Assert.True(matcher("word2"));
       Assert.False(matcher("word3"));
     }
-    
+
     [Fact]
     public void TestMultipleConditions()
     {
@@ -42,7 +42,7 @@ namespace CQuery.Test
       Assert.True(matcher("word2 word3"));
       Assert.False(matcher("word3"));
     }
-    
+
     [Fact]
     public void TestNotCondition()
     {
@@ -50,6 +50,29 @@ namespace CQuery.Test
 
       Assert.True(matcher("word1"));
       Assert.False(matcher("word3"));
+    }
+
+    [Fact]
+    public void TestCaseSensitive()
+    {
+      var matcher = SimpleQuery.Compile(@"""word1""");
+
+      Assert.True(matcher("word1"));
+      Assert.False(matcher("Word1"));
+    }
+
+    [Fact]
+    public void TestCaseInsensitive()
+    {
+      var matcher = SimpleQuery.Compile(@"""word1"" OR ""Word2""", new SimpleQueryOptions() {
+          CaseInsensitive = true,
+      });
+
+      Assert.True(matcher("word1"));
+      Assert.True(matcher("Word1"));
+      Assert.True(matcher("word2"));
+      Assert.True(matcher("Word2"));
+      Assert.False(matcher("Word3"));
     }
   }
 }

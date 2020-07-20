@@ -10,6 +10,11 @@ namespace CQuery
     public ParserException(string message) : base(message) { }
   }
 
+  public class SimpleQueryOptions
+  {
+    public bool CaseInsensitive { get; set; } = false;
+  }
+
   public static class SimpleQuery
   {
     private static Parser<ExpressionType> LogicBinary = Parse.Or(
@@ -21,13 +26,20 @@ namespace CQuery
 
     private static readonly Parser<string> Phrase = Parse.CharExcept('"').AtLeastOnce().Contained(Parse.Char('"'), Parse.Char('"')).Text();
 
-    public static Func<string, bool> Compile(string query)
+    public static Func<string, bool> Compile(string query, SimpleQueryOptions options = null)
     {
+      if (options == null)
+        options = new SimpleQueryOptions();
+
       var inputParam = Expression.Parameter(typeof(string), "text");
 
       Parser<Expression> ParsedPhrase = Phrase
           .Select(x => {
-            var regex = new Regex($@"\b{Regex.Escape(x.ToLowerInvariant())}\b", RegexOptions.Compiled);
+            var opts = RegexOptions.Compiled;
+            if (options.CaseInsensitive)
+              opts |= RegexOptions.IgnoreCase;
+
+            var regex = new Regex($@"\b{Regex.Escape(x)}\b", opts);
             return Expression.Call(Expression.Constant(regex), "IsMatch", null, inputParam);
           });
 
