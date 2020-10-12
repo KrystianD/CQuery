@@ -11,6 +11,11 @@ namespace CQuery.Test
 
       Assert.True(matcher("word1"));
       Assert.False(matcher("word2"));
+      
+      var matcher2 = SimpleQuery.Compile(@"word1");
+
+      Assert.True(matcher2("word1"));
+      Assert.False(matcher2("word2"));
     }
 
     [Fact]
@@ -36,9 +41,10 @@ namespace CQuery.Test
     [Fact]
     public void TestMultipleConditions()
     {
-      var matcher = SimpleQuery.Compile(@"(""word1"" OR ""word2"") AND ""word3""");
+      var matcher = SimpleQuery.Compile(@"(""word1 space"" OR word2) AND ""word3""");
 
-      Assert.True(matcher("word1 word3"));
+      Assert.False(matcher("word1 word3"));
+      Assert.True(matcher("word1 space word3"));
       Assert.True(matcher("word2 word3"));
       Assert.False(matcher("word3"));
     }
@@ -73,6 +79,19 @@ namespace CQuery.Test
       Assert.True(matcher("word2"));
       Assert.True(matcher("Word2"));
       Assert.False(matcher("Word3"));
+    }
+
+    [Fact]
+    public void TestDelimiterParentheses()
+    {
+      var matcher = SimpleQuery.Compile(@"((word1 space) OR word2) AND (word3)", new SimpleQuery.Options() {
+          PhraseDelimiterMode = PhraseDelimiterMode.Parentheses
+      });
+
+      Assert.False(matcher("word1 word3"));
+      Assert.True(matcher("word1 space word3"));
+      Assert.True(matcher("word2 word3"));
+      Assert.False(matcher("word3"));
     }
   }
 }

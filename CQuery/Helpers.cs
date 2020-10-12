@@ -3,6 +3,12 @@ using Sprache;
 
 namespace CQuery
 {
+  public enum PhraseDelimiterMode
+  {
+    Quotes,
+    Parentheses,
+  };
+
   internal static class Helpers
   {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
@@ -17,6 +23,16 @@ namespace CQuery
           Parse.AnyChar.Except(PhraseDelimiters).AtLeastOnce().Contained(StartPhraseDelimiter, EndPhraseDelimiter).Named("phrase"),
           Parse.AnyChar.Except(PhraseDelimiters).Except(Parse.WhiteSpace).Except(Parse.Chars("()")).AtLeastOnce().Named("word")
       ).Text();
+    }
+
+    public static Parser<string> CreatePhraseParser(PhraseDelimiterMode delimiterMode)
+    {
+      if (delimiterMode == PhraseDelimiterMode.Quotes)
+        return CreatePhraseParser('"', '"');
+      else if (delimiterMode == PhraseDelimiterMode.Parentheses)
+        return CreatePhraseParser('(', ')');
+      else
+        throw new ParseException("invalid delimiter mode");
     }
   }
 }

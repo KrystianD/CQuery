@@ -11,6 +11,8 @@ namespace CQuery
     public class Options
     {
       public bool CaseSensitive { get; set; } = true;
+
+      public PhraseDelimiterMode PhraseDelimiterMode { get; set; } = PhraseDelimiterMode.Quotes;
     }
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]
@@ -21,7 +23,7 @@ namespace CQuery
       var inputParam = Expression.Parameter(typeof(string), "text");
 
       Parser<Expression> ParsedPhrase =
-          Helpers.CreatePhraseParser('"', '"')
+          Helpers.CreatePhraseParser(options.PhraseDelimiterMode)
                  .Select(x => {
                    var opts = RegexOptions.Compiled;
                    if (!options.CaseSensitive)
