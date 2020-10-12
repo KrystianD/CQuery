@@ -5,11 +5,6 @@ using Sprache;
 
 namespace CQuery
 {
-  public class ParserException : Exception
-  {
-    public ParserException(string message) : base(message) { }
-  }
-
   public class SimpleQueryOptions
   {
     public bool CaseInsensitive { get; set; } = false;
