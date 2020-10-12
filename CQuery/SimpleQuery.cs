@@ -10,7 +10,7 @@ namespace CQuery
   {
     public class Options
     {
-      public bool CaseInsensitive { get; set; } = false;
+      public bool CaseSensitive { get; set; } = true;
     }
 
     private static readonly Parser<string> Phrase = Parse.CharExcept('"').AtLeastOnce().Contained(Parse.Char('"'), Parse.Char('"')).Text();
@@ -25,7 +25,7 @@ namespace CQuery
       Parser<Expression> ParsedPhrase = Phrase
           .Select(x => {
             var opts = RegexOptions.Compiled;
-            if (options.CaseInsensitive)
+            if (!options.CaseSensitive)
               opts |= RegexOptions.IgnoreCase;
 
             var regex = new Regex($@"\b{Regex.Escape(x)}\b", opts);

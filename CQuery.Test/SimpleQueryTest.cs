@@ -64,8 +64,8 @@ namespace CQuery.Test
     [Fact]
     public void TestCaseInsensitive()
     {
-      var matcher = SimpleQuery.Compile(@"""word1"" OR ""Word2""", new SimpleQueryOptions() {
-          CaseInsensitive = true,
+      var matcher = SimpleQuery.Compile(@"""word1"" OR ""Word2""", new SimpleQuery.Options() {
+          CaseSensitive = false,
       });
 
       Assert.True(matcher("word1"));
