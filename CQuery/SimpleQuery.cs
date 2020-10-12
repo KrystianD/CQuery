@@ -6,19 +6,19 @@ using Sprache;
 
 namespace CQuery
 {
-  public class SimpleQueryOptions
-  {
-    public bool CaseInsensitive { get; set; } = false;
-  }
-
   public static class SimpleQuery
   {
+    public class Options
+    {
+      public bool CaseInsensitive { get; set; } = false;
+    }
+
     private static readonly Parser<string> Phrase = Parse.CharExcept('"').AtLeastOnce().Contained(Parse.Char('"'), Parse.Char('"')).Text();
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public static Func<string, bool> Compile(string query, SimpleQueryOptions options = null)
+    public static Func<string, bool> Compile(string query, Options options = null)
     {
-      options ??= new SimpleQueryOptions();
+      options ??= new Options();
 
       var inputParam = Expression.Parameter(typeof(string), "text");
 
