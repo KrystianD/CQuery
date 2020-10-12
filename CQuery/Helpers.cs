@@ -13,7 +13,10 @@ namespace CQuery
       var EndPhraseDelimiter = Parse.Char(endPhraseDelimiter);
       var PhraseDelimiters = StartPhraseDelimiter.Or(EndPhraseDelimiter);
 
-      return Parse.AnyChar.Except(PhraseDelimiters).AtLeastOnce().Contained(StartPhraseDelimiter, EndPhraseDelimiter).Text();
+      return Parse.XOr(
+          Parse.AnyChar.Except(PhraseDelimiters).AtLeastOnce().Contained(StartPhraseDelimiter, EndPhraseDelimiter).Named("phrase"),
+          Parse.AnyChar.Except(PhraseDelimiters).Except(Parse.WhiteSpace).Except(Parse.Chars("()")).AtLeastOnce().Named("word")
+      ).Text();
     }
   }
 }
