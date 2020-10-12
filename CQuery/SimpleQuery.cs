@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using Sprache;
@@ -14,10 +15,10 @@ namespace CQuery
   {
     private static readonly Parser<string> Phrase = Parse.CharExcept('"').AtLeastOnce().Contained(Parse.Char('"'), Parse.Char('"')).Text();
 
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public static Func<string, bool> Compile(string query, SimpleQueryOptions options = null)
     {
-      if (options == null)
-        options = new SimpleQueryOptions();
+      options ??= new SimpleQueryOptions();
 
       var inputParam = Expression.Parameter(typeof(string), "text");
 
