@@ -12,13 +12,6 @@ namespace CQuery
 
   public static class SimpleQuery
   {
-    private static Parser<ExpressionType> LogicBinary = Parse.Or(
-        Parse.String("AND").Token().Return(ExpressionType.And),
-        Parse.String("OR").Token().Return(ExpressionType.Or));
-
-    private static Parser<ExpressionType> LogicNot =
-        Parse.String("NOT").Token().Return(ExpressionType.Not);
-
     private static readonly Parser<string> Phrase = Parse.CharExcept('"').AtLeastOnce().Contained(Parse.Char('"'), Parse.Char('"')).Text();
 
     public static Func<string, bool> Compile(string query, SimpleQueryOptions options = null)
@@ -38,18 +31,7 @@ namespace CQuery
             return Expression.Call(Expression.Constant(regex), "IsMatch", null, inputParam);
           });
 
-      Parser<Expression> Expr = null;
-
-      Parser<Expression> Factor =
-          Parse.Ref(() => Expr).Contained(Parse.Char('('), Parse.Char(')'))
-               .XOr(from _ in LogicNot
-                    from expr in Expr
-                    select Expression.Not(expr))
-               .XOr(ParsedPhrase);
-
-      Expr = Parse.ChainOperator(LogicBinary, Factor, Expression.MakeBinary);
-
-      var result = Expr.End().TryParse(query);
+      var result = LogicParserBuilder.BuildLogicParser(ParsedPhrase).TryParse(query);
 
       if (result.WasSuccessful) {
         var lambda = Expression.Lambda<Func<string, bool>>(result.Value, inputParam);
