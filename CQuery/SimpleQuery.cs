@@ -13,8 +13,6 @@ namespace CQuery
       public bool CaseSensitive { get; set; } = true;
     }
 
-    private static readonly Parser<string> Phrase = Parse.CharExcept('"').AtLeastOnce().Contained(Parse.Char('"'), Parse.Char('"')).Text();
-
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public static Func<string, bool> Compile(string query, Options options = null)
     {
@@ -22,15 +20,16 @@ namespace CQuery
 
       var inputParam = Expression.Parameter(typeof(string), "text");
 
-      Parser<Expression> ParsedPhrase = Phrase
-          .Select(x => {
-            var opts = RegexOptions.Compiled;
-            if (!options.CaseSensitive)
-              opts |= RegexOptions.IgnoreCase;
+      Parser<Expression> ParsedPhrase =
+          Helpers.CreatePhraseParser('"', '"')
+                 .Select(x => {
+                   var opts = RegexOptions.Compiled;
+                   if (!options.CaseSensitive)
+                     opts |= RegexOptions.IgnoreCase;
 
-            var regex = new Regex($@"\b{Regex.Escape(x)}\b", opts);
-            return Expression.Call(Expression.Constant(regex), "IsMatch", null, inputParam);
-          });
+                   var regex = new Regex($@"\b{Regex.Escape(x)}\b", opts);
+                   return Expression.Call(Expression.Constant(regex), "IsMatch", null, inputParam);
+                 });
 
       var result = LogicParserBuilder.BuildLogicParser(ParsedPhrase).TryParse(query);
 
