@@ -5,7 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Grammatica" Version="1.6.0" />
       <PackageReference Include="Sprache" Version="2.3.0" />
     </ItemGroup>
 
