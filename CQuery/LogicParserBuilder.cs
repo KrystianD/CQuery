@@ -19,12 +19,15 @@ namespace CQuery
       Parser<Expression> Expr = null;
       Parser<Expression> Factor = null;
 
+      var SubExpr = Parse.Ref(() => Expr).Contained(Parse.Char('('), Parse.Char(')'));
+      var NotExpr = LogicNot.Then(_ => Factor.Select(Expression.Not));
+
       Factor =
-          Parse.Ref(() => Expr).Contained(Parse.Char('('), Parse.Char(')'))
-               .XOr(from _ in LogicNot
-                    from expr in Factor
-                    select Expression.Not(expr))
-               .XOr(phrase.Named("<phrase>"));
+          SubExpr
+              .Or(NotExpr)
+              .Or(phrase.Named("<phrase>"))
+          ;
+
 
       Expr = Parse.XChainOperator(LogicBinary, Factor, Expression.MakeBinary);
 
