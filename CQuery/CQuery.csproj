@@ -2,6 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
+        <Authors>Krystian Dużyński</Authors>
+        <Version>0.0.2.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
